@@ -26,7 +26,7 @@
 
 (def cardinality-property-types
   "Valid property types that can change cardinality"
-  #{:default :number :url :date :node})
+  #{:default :number :url :date :datetime :node})
 
 (def default-value-ref-property-types
   "Valid ref property :type for default value support"
