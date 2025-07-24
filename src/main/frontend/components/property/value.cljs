@@ -1380,6 +1380,7 @@
   [block property v {:keys [on-chosen editing?] :as opts}]
   (let [type (:logseq.property/type property)
         date? (= type :date)
+        datetime? (= type :datetime)
         *el (hooks/use-ref nil)
         items (cond->> (if (entity-map? v) #{v} v)
                 (= (:db/ident property) :block/tags)
@@ -1431,9 +1432,9 @@
                        (select-item property type item (assoc opts :show-popup! show-popup!))
                        (or (:block/uuid item) (str item))))
                    (interpose [:span.opacity-50.-ml-1 ","]))
-              (when date?
+              (when (or date? datetime?)
                 [(property-value-date-picker block property nil {:toggle-fn toggle-fn})]))
-             (if date?
+             (if (or date? datetime?)
                (property-value-date-picker block property nil {:toggle-fn toggle-fn})
                (property-empty-text-value property opts))))]))))
 
