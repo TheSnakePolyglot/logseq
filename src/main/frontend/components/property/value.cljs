@@ -447,6 +447,26 @@
         (overdue date content)
         content))))
 
+(rum/defc datetime-value-no-overdue-just-datetime
+  [value]
+  (when-let [date (t/to-default-time-zone (tc/from-long value))]
+    [:div.ls-datetime.flex.flex-row.gap-1.items-center
+                   (when-let [page-cp (state/get-component :block/page-cp)]
+                     (let [page-title (date/journal-name date)]
+                       (rum/with-key
+                         (page-cp {:disable-preview? true
+                                   :show-non-exists-page? true
+                                   :label (human-date-label date)}
+                                  {:block/name page-title})
+                         page-title)))
+                   (let [date (js/Date. value)
+                         hours (.getHours date)
+                         minutes (.getMinutes date)]
+                     [:span.select-none
+                      (str (util/zero-pad hours)
+                           ":"
+                           (util/zero-pad minutes))])]))
+
 (defn- delete-block-property!
   [block property]
   (editor-handler/move-cross-boundary-up-down :up {})
@@ -1134,6 +1154,9 @@
        (contains? #{:node :class :property :page} type)
        (when-let [reference (state/get-component :block/reference)]
          (when value (reference {:table-view? table-view?} (:block/uuid value))))
+
+       (= :datetime type)
+       (datetime-value-no-overdue-just-datetime value)
 
        (and (map? value) (some? (db-property/property-value-content value)))
        (let [content (str (db-property/property-value-content value))]
